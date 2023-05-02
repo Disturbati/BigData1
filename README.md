@@ -8,6 +8,8 @@
 | Id  | ProductId | UserId | ProfileName | HelpfulnessNumerator | HelpfulnessDenominator | Score | Time | Summary | Text |
 | --- | --------- | ------ | ----------- | -------------------- | ---------------------- | ----- | ---- | ------- | ---- |
 
+P.S. Scaricare il file dal link (di cui sopra) e inserirlo nella cartella [dataset](./dataset/)
+
 ## Obiettivi:
 1. Prepara il dataset (eliminando eventuali dati errati o non significativi)
 2. Esegui almeno uno dei seguenti job in MapReduce, Hive e Spark:
