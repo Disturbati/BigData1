@@ -1,13 +1,14 @@
 # Corso di Big Data: Primo Progetto 26 Aprile 2023
 
-##Risorse: [dataset](https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews)
+## Risorse: [dataset](https://www.kaggle.com/datasets/snap/amazon-fine-food-reviews)
 - 500.000 recensioni di prodotti gastronomici rilasciati su Amazon dal 1999 al 2012
 - Formato CSV
 - Schema
+
 | Id  | ProductId | UserId | ProfileName | HelpfulnessNumerator | HelpfulnessDenominator | Score | Time | Summary | Text |
 | --- | --------- | ------ | ----------- | -------------------- | ---------------------- | ----- | ---- | ------- | ---- |
 
-##Obiettivi:
+## Obiettivi:
 1. Prepara il dataset (eliminando eventuali dati errati o non significativi)
 2. Esegui almeno uno dei seguenti job in MapReduce, Hive e Spark:
    1. Un job che sia in grado di generare, per ciascun anno, i 10 prodotti che hanno ricevuto il maggior numero di recensioni e, per ciascuno di essi, le 5 parole con almeno 4 caratteri più frequentemente usate nelle recensioni (campo text), indicando, per ogni parola, il numero di occorrenze della parola.
@@ -24,4 +25,4 @@
 
 N.B. *Per aumentare le dimensioni dell’input si suggerisce di generare copie del file dato, eventualmente alterando alcuni dati.*
 
-##Data di consegna: **entro il 25 Maggio 2023**
+## Data di consegna: **entro il 25 Maggio 2023**
