@@ -5,22 +5,20 @@ import sys
 user_id_2_ratings = {}
 
 for line in sys.stdin:
+    
     line = line.strip()
 
     user_id, rating = line.split("\t")
 
+    if user_id not in user_id_2_ratings:
+        user_id_2_ratings[user_id] = (0, 0)
+    
     try:
-        rating = float(rating)
+        user_id_2_ratings[user_id][0] += float(rating)
     except ValueError:
         continue
 
-    if user_id not in user_id_2_ratings:
-        user_id_2_ratings[user_id] = rating
+    user_id_2_ratings[user_id][1] += 1
 
-    user_id_2_ratings[user_id] = rating
-
-frequencies = user_id_2_ratings.items()
-sorted_user_ids_2_ratings = sorted(frequencies, key=lambda x: x[1], reverse=True)
-
-for user_id, ratings in sorted_user_ids_2_ratings:
-    print("%s\t%f" % (user_id, ratings))
+for user_id in user_id_2_ratings.keys():
+    print("%s\t%f" % (user_id, user_id_2_ratings[user_id][0] / user_id_2_ratings[user_id][1]))
