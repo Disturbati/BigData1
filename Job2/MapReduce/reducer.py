@@ -11,7 +11,7 @@ for line in sys.stdin:
     user_id, rating = line.split("\t")
 
     if user_id not in user_id_2_ratings:
-        user_id_2_ratings[user_id] = (0, 0)
+        user_id_2_ratings[user_id] = [0, 0]
     
     try:
         user_id_2_ratings[user_id][0] += float(rating)
