@@ -173,5 +173,6 @@ cython_debug/
 # Built Visual Studio Code Extensions
 *.vsix
 
-# Avoid committing dataset
+# Avoid committing dataset and derby schema
 dataset/*
+derby-db-schema/*
