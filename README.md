@@ -28,3 +28,13 @@ P.S. Scaricare il file dal link (di cui sopra) e inserirlo nella cartella [datas
 N.B. *Per aumentare le dimensioni dell’input si suggerisce di generare copie del file dato, eventualmente alterando alcuni dati.*
 
 ## Data di consegna: **entro il 25 Maggio 2023**
+
+### Da fare per eseguire i job con Hive
+
+1. Creare la cartella *derby-db-schema* nella root del progetto
+2. Posizionarsi nella cartella appena creata
+3. Lanciare il seguente comando da shell ```schematool -dbType derby -initSchema```
+4. Lanciare run-hive.sh che prende i seguenti parametri:
+   1. .hql path del file con cui si esegue il job 
+   2. .hql path del file con cui si stampa le prime 10 righe del risultato del job
+   3. .hql path del file con cui si droppano le tabelle create [opzionale]
