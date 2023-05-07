@@ -175,4 +175,5 @@ cython_debug/
 
 # Avoid committing dataset and derby schema
 dataset/*
+!dataset/*.py
 derby-db-schema/*
