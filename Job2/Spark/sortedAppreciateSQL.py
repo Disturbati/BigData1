@@ -7,9 +7,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 import time
 
-# calculate time elapsed
-start_time = time.time()
-
 # Parse the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--input", help="the input path")
@@ -35,13 +32,16 @@ schema = StructType([
     StructField("text", StringType(), True)
 ])
 
+# calculate time elapsed
+start_time = time.time()
+# ================================
 input_df = spark.read.csv(input_path, header=False, schema=schema).cache()
 
 # Use sql to filter the input file
 filtered_df = input_df.select("userId", "helpfulnessNumerator", "helpfulnessDenominator").filter("helpfulnessNumerator >= 0 and helpfulnessDenominator > 0 and helpfulnessNumerator <= helpfulnessDenominator") \
     .withColumn("appreciate", input_df["helpfulnessNumerator"] / input_df["helpfulnessDenominator"]) \
     .select("userId", "appreciate").groupBy("userId").avg("appreciate").orderBy("avg(appreciate)", ascending=False)
-
+# ================================
 end_time = time.time()
 
 # Print the time elapsed
