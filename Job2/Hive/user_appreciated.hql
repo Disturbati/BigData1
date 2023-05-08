@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS reviews (
+CREATE EXTERNAL TABLE reviews (
     id int,
     productId string,
     userId string,
@@ -9,10 +9,10 @@ CREATE TABLE IF NOT EXISTS reviews (
     time string,
     summary string,
     text string
-) ROW FORMAT DELIMITED FIELDS TERMINATED BY "," tblproperties("skip.header.line.count"="1");
+) ROW FORMAT DELIMITED FIELDS TERMINATED BY "," LOCATION '/user/${hiveconf:username}/input/${hiveconf:regexDB}' tblproperties("skip.header.line.count"="1");
 
-LOAD DATA LOCAL INPATH "/Users/davidegattini/SourceTreeProj/BigData1/dataset/${hiveconf:regexDB}.csv" OVERWRITE INTO TABLE reviews;
--- LOAD DATA INPATH "/user/${hiveconf:username}/input/${hiveconf:regexDB}" OVERWRITE INTO TABLE reviews;
+-- LOAD DATA LOCAL INPATH "/Users/davidegattini/SourceTreeProj/BigData1/dataset/${hiveconf:regexDB}.csv" OVERWRITE INTO TABLE reviews;
+-- LOAD DATA INPATH "hdfs:/user/${hiveconf:username}/input/${hiveconf:regexDB}.csv" OVERWRITE INTO TABLE reviews;
 
 CREATE TABLE user_reviews_avarage_utility AS
     SELECT userId, avg(1.0*(helpfulnessNumerator/helpfulnessDenominator)) as avg_reviews_utility

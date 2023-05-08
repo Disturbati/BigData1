@@ -7,16 +7,18 @@
 #   4. Runna lo script run_hive.sh rimanendo nella cartella derby-db-schema
 
 # ARGUMENTI:
-#  1. .hql path to run
-#  2. .hql path to show first 10 rows of the output
-#  3. .hql path to delete the table (optional)
+# 1. hdfs username
+# 2. csv dataset file used as input (e.g. Reviews_2)
+# 1. .hql path to run
+# 2. .hql path to show first 10 rows of the output
+# 3. .hql path to delete the table (optional)
 
 if [ $# -lt 4 ]
   then
     echo ""
     echo "Please provide:"
     echo "  1) hdfs username"
-    echo "  2) regex to filter the dataset file used as input (e.g. reviews(1|2))"
+    echo "  2) csv dataset file used as input (e.g. Reviews_2)"
     echo "  3) .hql path to run"
     echo "  4) .hql path to show first 10 rows of the output"
     echo "  (if you want to delete the table, please provide also .hql path to delete the table)"
@@ -35,7 +37,7 @@ if [ $# -eq 4 ]
         echo ""
         echo "Please provide:"
         echo "  1) hdfs username"
-        echo "  2) csv dataset file used as input (e.g. reviews2)"
+        echo "  2) csv dataset file used as input (e.g. Reviews_2)"
         echo "  3) .hql path to run"
         echo "  4) .hql path to show first 10 rows of the output"
         echo "  5) .hql path to delete the table"
@@ -45,12 +47,15 @@ if [ $# -eq 4 ]
 fi
 
 # calcolo il path assoluto dello script
-SCRIPTPATH=$(readlink -f "$3")
+PROC_HIVE_PATH=$(readlink -f "$3")
+OUTPUT_HIVE_PATH=$(readlink -f "$4")
+DELETE_HIVE_PATH=$(readlink -f "$5")
 
 # calcola la cartella in cui si trova il file passato come primo parametro
-HIVE_FOLDER=$(dirname "$3")
+HIVE_FOLDER=$(dirname "$PROC_HIVE_PATH")
 
-echo "Script path: "$SCRIPTPATH
+echo "Script path: "$PROC_HIVE_PATH
+echo "Hive folder: "$HIVE_FOLDER
 
 DATE=$(date +"%Y%m%d_%H%M%S")
 
@@ -60,11 +65,17 @@ echo "Executing hive script..."
 echo "-----------------------------"
 echo ""
 
+cd "derby-db-schema"
+
+# ======================LANCIA HIVE==============================
+
 START=$(date +%s);
 
-hive --hiveconf username="$1" --hiveconf regexDB="$2" -f $3
+hive --hiveconf username="$1" --hiveconf regexDB="$2" -f $PROC_HIVE_PATH
 
 END=$(date +%s);
+
+# ================================================================
 
 echo $((END-START)) | awk '{print int($1/60)":"int($1%60)}'
 
@@ -76,18 +87,19 @@ echo ""
 
 echo "First 10 rows of the output:"
 echo "-----------------------------"
+pwd
 echo ""
-hive -f $4
+hive -f $OUTPUT_HIVE_PATH
 echo "-----------------------------"
 echo ""
 
 # se c'è un terzo parametro, cancello le tabelle
-if [ $# -eq 5]
+if [ $# -eq 5 ]
   then
     echo "Deleting table..."
     echo "-----------------------------"
     echo ""
-    hive -f $5
+    hive -f $DELETE_HIVE_PATH
     echo "-----------------------------"
     echo ""
 fi

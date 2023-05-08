@@ -7,5 +7,8 @@ if [[ $# -ne 2 ]]
         exit 1
 fi
 
+# remove the extension of the file
+folder_name="${$2%.*}"
+
 # esegui spark-submit
-spark-submit --master yarn $1 --input hdfs:///user/$USER/input/$2
+spark-submit --master yarn $1 --input hdfs:///user/$USER/input/$folder_name/$2.csv

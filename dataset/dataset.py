@@ -12,7 +12,6 @@ df = pd.read_csv(path + '/Reviews.csv')
 
 random.seed(42)
 df_copy = df.copy()
-union_df = pd.DataFrame(columns=df.columns)
 
 steps = [2, 5, 10]
 
@@ -24,7 +23,7 @@ for i in range(1, 10):
     df_copy['Score'] = df_copy['Score'].transform(lambda x : random.randint(1, 5))
     df_copy['Text'] = df_copy['Text'].transform(lambda x : x[:random.randint(0, len(x))])
 
-    union_df = pd.concat([union_df, df_copy], ignore_index=True)
+    df = pd.concat([df, df_copy], ignore_index=True)
 
     if i+1 in steps:
-        union_df.to_csv(path + '/Reviews_' + str(i+1) + '.csv', index=False)
+        df.to_csv(path + '/Reviews_' + str(i+1) + '.csv', index=False)
