@@ -46,6 +46,5 @@ end_time = time.time()
 
 # Print the time elapsed
 print("Time elapsed: ", end_time - start_time)
-
 # Write the first 10 rows of the output file
 filtered_df.show(10)
