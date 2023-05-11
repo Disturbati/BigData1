@@ -23,8 +23,7 @@ def split(line):
     # Split the line using commas as a delimiter
     fields = line.split(',')
     # Replace semicolons back to commas
-    fields = [field.replace(';', ',') for field in fields]
-    return fields
+    line = [field.replace(';', ',') for field in fields]
     return (line[2], line[4], line[5])
 
 def valid(line):
