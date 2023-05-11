@@ -8,9 +8,10 @@ import time
 # Parse the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--input", help="the input path")
+parser.add_argument("--output", help="the output path")
 
 args = parser.parse_args()
-input_path = args.input
+input_path, output_path = args.input, args.output
 
 # Create the SparkSession
 spark = SparkSession.builder.appName("sortedAppreciate").getOrCreate()
@@ -59,3 +60,5 @@ print("Time elapsed: \n\n", end_time - start_time)
 # Print in the console the first ten users
 for user in sorted_userid_avg_rating_rdd.take(10):
     print(user)
+
+sorted_userid_avg_rating_rdd.saveAsTextFile(output_path)

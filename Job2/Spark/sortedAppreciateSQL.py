@@ -10,10 +10,11 @@ import time
 # Parse the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--input", help="the input path")
+parser.add_argument("--output", help="the output path")
 
 args = parser.parse_args()
 
-input_path = args.input
+input_path, output_path = args.input, args.output
 
 # Create the SparkSession
 spark = SparkSession.builder.appName("sortedAppreciateSQL").getOrCreate()
@@ -48,3 +49,6 @@ end_time = time.time()
 print("Time elapsed: ", end_time - start_time)
 # Write the first 10 rows of the output file
 filtered_df.show(10)
+
+# Write the output file
+filtered_df.write.csv(output_path)
