@@ -4,7 +4,7 @@
 import sys 
 import csv
 
-reader = csv.reader(sys.stdin, delimiter=',')
+reader = csv.reader(sys.stdin, delimiter=',', quotechar='"')
 
 for line in reader:
 

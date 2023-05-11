@@ -36,7 +36,9 @@ schema = StructType([
 # calculate time elapsed
 start_time = time.time()
 # ================================
-input_df = spark.read.csv(input_path, header=False, schema=schema).cache()
+input_df = spark.read.csv(input_path, header=False, schema=schema) \
+         .option("quote", "\"") \
+         .cache()
 
 # Use sql to filter the input file
 filtered_df = input_df.select("userId", "helpfulnessNumerator", "helpfulnessDenominator").filter("helpfulnessNumerator >= 0 and helpfulnessDenominator > 0 and helpfulnessNumerator <= helpfulnessDenominator") \

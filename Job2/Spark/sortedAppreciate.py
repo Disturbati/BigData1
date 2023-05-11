@@ -4,6 +4,7 @@
 import argparse
 from pyspark.sql import SparkSession
 import time
+import regex as re
 
 # Parse the arguments
 parser = argparse.ArgumentParser()
@@ -17,8 +18,13 @@ input_path, output_path = args.input, args.output
 spark = SparkSession.builder.appName("sortedAppreciate").getOrCreate()
 
 def split(line):
-    """Splits a line of the input file"""
-    line = line.split(",")
+    # Replace commas inside quotes with semicolons
+    line = re.sub(r'(?<=")[^"]+,(?=[^"]*")', lambda m: m.group().replace(',', ';'), line)
+    # Split the line using commas as a delimiter
+    fields = line.split(',')
+    # Replace semicolons back to commas
+    fields = [field.replace(';', ',') for field in fields]
+    return fields
     return (line[2], line[4], line[5])
 
 def valid(line):
