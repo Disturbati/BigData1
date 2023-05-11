@@ -87,9 +87,8 @@ echo ""
 
 echo "First 10 rows of the output:"
 echo "-----------------------------"
-pwd
 echo ""
-hive -f $OUTPUT_HIVE_PATH
+hive --hiveconf username="$1" --hiveconf regexDB="$2" -f $OUTPUT_HIVE_PATH
 echo "-----------------------------"
 echo ""
 
