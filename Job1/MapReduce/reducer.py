@@ -3,35 +3,43 @@
 import sys
 
 # mappa per tener conto del numero di recensioni di un productId (dato un anno) e il testo di tutte le recensioni relative
-#   chiave = productId
-#   valore = (numero_recensioni, testo_recensioni)
-productId_already_met = {}
+#   chiave = year
+#   valore = dict {productId1: (num_rec1, text_rec1),..., productIdN: (num_recN, text_recN)}
+year2productIdStats = {}
 
 for line in sys.stdin:
     # year è la chiave, quindi ad ogni reducer arriveranno tutti i record relativi ad un anno
     year, productId, num_review, text_review = line.strip().split("\t")
 
-    # se il productId è già nella mappa
-    if productId in productId_already_met:
-        num_prod_reviews = productId_already_met[productId][0] # numero reviews totali per un productId (relativo ad un anno)
-        txt_prev_review = productId_already_met[productId][1]  # testo delle reviews relative ad un productId (relativo ad un anno)
+    # inizializzo il dizionario se necessario
+    if year not in year2productIdStats:
+        year2productIdStats[year] = {}
+
+    productsCurrYear = year2productIdStats[year] # guardiamo solo i prodotti dell'anno corrente
+   
+    # se il productId è già presente nel dizionario associato all'anno che sta guardando il reducer corrente
+    # allora modifico num_rec e text_rec
+    if productId in productsCurrYear:
+        num_prod_reviews = productsCurrYear[productId][0] # numero reviews totali per un productId (relativo ad un anno)
+        txt_prev_review = productsCurrYear[productId][1]  # testo delle reviews relative ad un productId (relativo ad un anno)
         # aggiorno i dati:
         #   numero_recensioni + 1
         #   append del testo della recensione corrente
-        productId_already_met[productId] = (num_prod_reviews+1,txt_prev_review+' '+text_review) 
+        productsCurrYear[productId] = (num_prod_reviews+1, txt_prev_review+' '+text_review) 
 
-    # productId incontrato la prima volta
+    # altrimenti lo aggiungo al dizionario con i valori inizializzati
     else:
-        productId_already_met[productId] = (1,text_review)
+        productsCurrYear[productId] = (1,text_review)
 
-# sort di tutti i productId (relativi ad un anno) rispetto al numero di reviews
-productId_already_met = sorted(productId_already_met.keys(), key=lambda x: productId_already_met[x][0], reverse=True)
+# SORTING
+for year in year2productIdStats:
+    # per ogni anno faccio il sort di tutti i productId rispetto al numero di reviews e ne prendo i primi 10
+    year2productIdStats[year] = {k: v for k,v in sorted(year2productIdStats[year].items(), key=lambda x: x[1], reverse=True)[:10]}
 
-# stampa di tutto i productId relativi ad un anno, del numero di recensioni e del testo delle recensioni
-for productId in productId_already_met:
-    print(year, productId, productId_already_met[productId][0], productId_already_met[productId][1], sep="\t")
-
-# TODO: 
-#   File "/Users/davidegattini/SourceTreeProj/BigData1/Job1/MapReduce/reducer.py", line 32, in <module>
-#       print(year, productId, productId_already_met[productId][0], productId_already_met[productId][1], sep="\t")
-#       TypeError: list indices must be integers or slices, not str
+# OUTPUT
+for year in year2productIdStats:
+    productsCurrYear = year2productIdStats[year]
+    for productId in productsCurrYear:
+        # TODO: ricontrolla i risultati con il secondo print 
+        # print(year, productId, productsCurrYear[productId][0], productsCurrYear[productId][1], sep="\t")
+        print(year, productId, productsCurrYear[productId][0], sep="\t")
