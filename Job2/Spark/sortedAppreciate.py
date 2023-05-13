@@ -4,7 +4,7 @@
 import argparse
 from pyspark.sql import SparkSession
 import time
-import regex as re
+import re
 
 # Parse the arguments
 parser = argparse.ArgumentParser()
@@ -19,12 +19,12 @@ spark = SparkSession.builder.appName("sortedAppreciate").getOrCreate()
 
 def split(line):
     # Replace commas inside quotes with semicolons
-    line = re.sub(r'(?<=")[^"]+,(?=[^"]*")', lambda m: m.group().replace(',', ';'), line)
+    line = re.sub(r',(?=[^"]*"[^"]*(?:"[^"]*"[^"]*)*$)', lambda m: m.group().replace(',', ';'), line)
     # Split the line using commas as a delimiter
     fields = line.split(',')
     # Replace semicolons back to commas
-    line = [field.replace(';', ',') for field in fields]
-    return (line[2], line[4], line[5])
+    fields = [field.replace(';', ',') for field in fields]
+    return fields[2], fields[4], fields[5]
 
 def valid(line):
     """Checks if the line is valid"""
