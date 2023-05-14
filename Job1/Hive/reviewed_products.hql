@@ -42,7 +42,7 @@ CREATE TABLE top_reviews_for_year_with_words AS (
 );
 
 CREATE TABLE reviewed_products AS (
-   SELECT *
+   SELECT top_reviews_for_year_with_words.productId, top_reviews_for_year_with_words.reviews_year, top_reviews_for_year_with_words.word, top_reviews_for_year_with_words.word_count, top_counted_reviews.n_review
    FROM top_reviews_for_year_with_words JOIN top_counted_reviews
    WHERE top_reviews_for_year_with_words.productId = top_counted_reviews.productId AND top_reviews_for_year_with_words.reviews_year = top_counted_reviews.reviews_year
 );
