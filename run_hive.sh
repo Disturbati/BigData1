@@ -82,7 +82,7 @@ echo "-----------------------------"
 echo ""
 
 # se c'è un terzo parametro, cancello le tabelle
-if [ $# -eq 5]
+if [ $# -eq 5 ]
   then
     echo "Deleting table..."
     echo "-----------------------------"

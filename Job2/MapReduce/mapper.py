@@ -5,6 +5,7 @@ import sys
 import csv
 
 reader = csv.reader(sys.stdin, delimiter=',', quotechar='"')
+next(reader)
 
 for line in reader:
 
