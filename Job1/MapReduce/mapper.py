@@ -32,4 +32,7 @@ for line in reader:
     # rimuovi la punteggiatura
     text_review = text_review.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation)))
 
+    # rimuovi tutti i caratteri di spaziatura
+    text_review = " ".join(text_review.split())
+
     print(year, productId, 1, text_review, sep="\t")

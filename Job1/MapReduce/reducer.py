@@ -40,6 +40,8 @@ for year in year2productIdStats:
 for year in year2productIdStats:
     productsCurrYear = year2productIdStats[year]
     for productId in productsCurrYear:
-        # TODO: ricontrolla i risultati con il secondo print 
+        # stampati per ogni anno i 10 prodotti più recensiti:
+        # year, productId, num_reviews totali relative a quel prodotto in quel anno, testo di tutte le reviews di quel prodotto in quel anno
         # print(year, productId, productsCurrYear[productId][0], productsCurrYear[productId][1], sep="\t")
-        print(year, productId, productsCurrYear[productId][0], sep="\t")
+        print("%s,%s\t%s\t%s" % (year, productId, productsCurrYear[productId][0], productsCurrYear[productId][1]))
+        # print(year, productId, productsCurrYear[productId][0], sep="\t")
