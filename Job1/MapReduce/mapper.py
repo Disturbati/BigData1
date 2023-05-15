@@ -27,7 +27,7 @@ for line in reader:
 
     # pre processing del testo, pulito da punteggiatura e tag html
     html_regex = re.compile(r"<.*?>") # regex per togliere tag html
-    text_review = html_regex.sub("", text_review) # esegue sostutuzione
+    text_review = html_regex.sub("", text_review) # esegue sostituzione
 
     # rimuovi la punteggiatura
     text_review = text_review.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation)))
