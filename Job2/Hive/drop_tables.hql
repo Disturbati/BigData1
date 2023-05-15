@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS reviews;
-DROP TABLE IF EXISTS user_reviews_avarage_utility;
+DROP TABLE reviews;
+DROP TABLE user_reviews_avarage_utility;

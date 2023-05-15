@@ -1,0 +1,14 @@
+# TASK 1
+    # Mapper: 
+    #   (productID=A,...,time=year) => (year,A:1:testo)
+    #   (productID=Q,...,time=year) => (year,Q:1:testo)
+    #   (productID=Q,...,time=yr)   => (yr,Q:1:testo)
+    # Reducer:
+    #   (year,A:1:testo),...,(year,Q:1:testo) => (year,[Q:10:testi,...,A:3:testi])
+    #   (yr,Q:1:testo)                  => (yr,[Q:5:testi])
+
+    # TASK 2
+    # Mapper:
+    #   (year,[Q:10:testi,...,A:3:testi]) => (year,[Q:10:[1°parola:1,2°parola:2,...],..., A:3:[1°parola:1,2°parola:2,...]])
+    # Reducer:
+    #   (year,[Q:10:[1°parola:1,2°parola:2,...],..., A:3:[1°parola:1,2°parola:2,...]]) => 
