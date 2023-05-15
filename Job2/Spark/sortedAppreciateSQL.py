@@ -36,8 +36,8 @@ schema = StructType([
 # calculate time elapsed
 start_time = time.time()
 # ================================
-input_df = spark.read.csv(input_path, header=False, schema=schema) \
-         .option("quote", "\"") \
+input_df = spark.read.option("quote", "\"") \
+         .csv(input_path, header=False, schema=schema) \
          .cache()
 
 # Use sql to filter the input file
