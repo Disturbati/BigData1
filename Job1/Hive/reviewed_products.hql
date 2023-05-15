@@ -20,8 +20,8 @@ CREATE TABLE top_counted_reviews AS (
     SELECT cr.n_review, cr.reviews_year, cr.productId
     FROM (
         SELECT count(*) as n_review, year(from_unixtime(time)) as reviews_year, productId,
-            row_number() over (
-                partition by year(from_unixtime(time)) order by count(*) desc
+            row_number() OVER (
+                PARTITION BY year(from_unixtime(time)) ORDER BY count(*) DESC
                 ) as row_num
         FROM reviews
         GROUP BY year(from_unixtime(time)), productId
@@ -33,16 +33,24 @@ CREATE TABLE top_reviews_for_year_with_words AS (
     SELECT productID, reviews_year, word, word_count
     FROM (
         SELECT productID, word, count(*) as word_count, year(from_unixtime(time)) as reviews_year,
-            row_number() OVER (PARTITION BY productID, year(from_unixtime(time)) ORDER BY count(*) DESC) as rank
-        FROM reviews
-        LATERAL VIEW explode(split(text, ' ')) wordTable AS word
+            row_number() OVER (
+                PARTITION BY productID, year(from_unixtime(time)) ORDER BY count(*) DESC
+                ) as row_num
+        FROM (
+            SELECT productID, LOWER(word) as word, time
+            FROM reviews
+            LATERAL VIEW explode(split(text, ' ')) wordTable AS word
+            WHERE length(word) > 3
+        ) lower_words
         GROUP BY productID, year(from_unixtime(time)), word
     ) words
-    WHERE rank <= 5
+    WHERE row_num <= 5
 );
 
 CREATE TABLE reviewed_products AS (
-   SELECT top_reviews_for_year_with_words.productId, top_reviews_for_year_with_words.reviews_year, top_reviews_for_year_with_words.word, top_reviews_for_year_with_words.word_count, top_counted_reviews.n_review
+   SELECT top_reviews_for_year_with_words.reviews_year, top_reviews_for_year_with_words.productID, top_reviews_for_year_with_words.word, top_reviews_for_year_with_words.word_count, top_counted_reviews.n_review
    FROM top_reviews_for_year_with_words JOIN top_counted_reviews
    WHERE top_reviews_for_year_with_words.productId = top_counted_reviews.productId AND top_reviews_for_year_with_words.reviews_year = top_counted_reviews.reviews_year
 );
+
+INSERT OVERWRITE DIRECTORY '/user/${hiveconf:username}/output/${hiveconf:regexDB}' SELECT * FROM reviewed_products;
