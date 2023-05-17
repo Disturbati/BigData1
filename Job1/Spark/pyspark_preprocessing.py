@@ -1,52 +1,57 @@
 from pyspark.sql import SparkSession
 import argparse
-from datetime import datetime
-import re
+from pyspark.sql.functions import col, regexp_replace
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 import string
+import re
 
-# parsing degli argomenti
+# Parsing the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--input", type=str)
-
 args = parser.parse_args()
 input_path = args.input
-# get name last file from input_path removing extension
+
+# Extracting the filename without extension
 input_filename = input_path.split("/")[-1].split(".")[0]
 
-# il dataset cleanato ha lo stesso nome + '_job1_cleaned'
-output_file_cleaned_path = "hdfs:///user/davidegattini/input/" + input_filename + '_job1_cleaned'
+# Output file path for cleaned dataset
+output_file_cleaned_path = "hdfs:///user/davidemolitierno/input/" + input_filename + '_job1_cleaned'
 
-# spark session
+# Create a Spark session
 spark = SparkSession.builder.getOrCreate()
-sc = spark.sparkContext
 
-# funzione che esegue la pulizia del testo
-#   1. eliminati tag html
-#   2. eliminata punteggiatura
-#   3. eliminati caratteri di spaziatura
-def cleanText(text_review):
-    # pulito da punteggiatura e tag html
-    html_regex = re.compile(r"<.*?>") # regex per togliere tag html
-    text_review = html_regex.sub("", text_review) # esegue sostituzione
+# Define the schema structure
+schema = StructType([
+    StructField("Id", IntegerType(), True),
+    StructField("productId", StringType(), True),
+    StructField("userId", StringType(), True),
+    StructField("profileName", StringType(), True),
+    StructField("helpfulnessNumerator", IntegerType(), True),
+    StructField("helpfulnessDenominator", IntegerType(), True),
+    StructField("score", StringType(), True),
+    StructField("time", IntegerType(), True),
+    StructField("summary", StringType(), True),
+    StructField("text", StringType(), True)
+])
 
-    # rimuovi la punteggiatura
-    text_review = text_review.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation)))
+# Reading the input CSV file
+csv_df = spark.read.option("quote", "\"").csv(input_path, header=True, schema=schema).cache()
 
-    # rimuovi tutti i caratteri di spaziatura
-    text_review = " ".join(text_review.split())
-    return text_review
+# Skip the header of the CSV file
+header = csv_df.first()
 
-# reading input
-csv_rdd = sc.textFile(input_path)
-header = csv_rdd.first() # header del file usato per skipparlo nella fase di preparazione dei dati
-header_rdd = sc.parallelize([header]) # crea rdd con solo l'header del csv
+# Convert the "Id" column to a numeric type for proper sorting
+df_without_header = csv_df.withColumn("Id", col("Id").cast("int"))
 
-# Preprocessing
-#   1. skip dell'header del file csv
-#   2. splitting dei campi 
-#   3. return di un RDD cui record sono fatti dalla selezione del productId, year (ottenuto convertendo lo unixtimestamp) e il testo della recensione pulito
-input_rdd = csv_rdd.filter(lambda x: x != header).map(lambda x: x.strip().split(",")).map(lambda x: (x[0] + "," + x[1] + "," + x[2] + "," +  x[3] + "," +  x[4] + "," +  x[5] + "," +  x[6] + "," +  x[7] + "," +  x[8] + "," +  cleanText(x[9])))
+# Remove HTML tags and punctuation from the "Text" column
+punctuation_pattern = "[!\"#$%&'()*+,-./:;<=>?@\\[\\\\\\]^_`{|}~<>]"
+df_cleaned = df_without_header.withColumn("Text", regexp_replace(col("Text"), f"<.*?>|{punctuation_pattern}", ""))
 
-output_rdd = header_rdd.union(input_rdd.coalesce(1)).repartition(2) # unisci l'header del csv con il contenuto del csv
+# Sort the DataFrame by the "Id" column in ascending order
+sorted_df = df_cleaned.orderBy("Id")
 
-output_rdd.sortByKey().coalesce(1).saveAsTextFile(output_file_cleaned_path)
+# Recreate the DataFrame with the header and sorted records
+output_rdd = spark.createDataFrame([header]).union(sorted_df)
+
+# Write the sorted DataFrame to a CSV file on HDFS
+output_rdd.coalesce(1).write.csv(output_file_cleaned_path, header=True, mode="overwrite")

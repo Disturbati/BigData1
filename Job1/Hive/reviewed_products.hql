@@ -12,18 +12,21 @@ CREATE TABLE IF NOT EXISTS reviews (
     ) 
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
 WITH SERDEPROPERTIES('separatorChar'=',', 'quoteChar'='\"') 
-LOCATION '/user/${hiveconf:username}/input/${hiveconf:regexDB}'
+-- LOCATION '/user/${hiveconf:username}/input/${hiveconf:regexDB}'
 tblproperties('skip.header.line.count'='1');
+
+-- LOAD DATA LOCAL INPATH "/Users/davidegattini/SourceTreeProj/BigData1/dataset/${hiveconf:regexDB}.csv" OVERWRITE INTO TABLE reviews;
+LOAD DATA INPATH "hdfs:/user/${hiveconf:username}/input/${hiveconf:regexDB}" OVERWRITE INTO TABLE reviews;
 
 CREATE TABLE top_counted_reviews AS (
     SELECT cr.n_review, cr.reviews_year, cr.productId
     FROM (
-        SELECT count(*) as n_review, year(from_unixtime(time)) as reviews_year, productId,
+        SELECT count(*) as n_review, year(from_unixtime(CAST(time AS int))) as reviews_year, productId,
             row_number() OVER (
-                PARTITION BY year(from_unixtime(time)) ORDER BY count(*) DESC
+                PARTITION BY year(from_unixtime(CAST(time AS int))) ORDER BY count(*) DESC
                 ) as row_num
         FROM reviews
-        GROUP BY year(from_unixtime(time)), productId
+        GROUP BY year(from_unixtime(CAST(time AS int))), productId
     ) as cr
     WHERE cr.row_num <= 10
 );
@@ -31,9 +34,9 @@ CREATE TABLE top_counted_reviews AS (
 CREATE TABLE top_reviews_for_year_with_words AS (
     SELECT productID, reviews_year, word, word_count
     FROM (
-        SELECT productID, word, count(*) as word_count, year(from_unixtime(time)) as reviews_year,
+        SELECT productID, word, count(*) as word_count, year(from_unixtime(CAST(time AS int))) as reviews_year,
             row_number() OVER (
-                PARTITION BY productID, year(from_unixtime(time)) ORDER BY count(*) DESC
+                PARTITION BY productID, year(from_unixtime(CAST(time AS int))) ORDER BY count(*) DESC
                 ) as row_num
         FROM (
             SELECT productID, LOWER(word) as word, time
@@ -41,7 +44,7 @@ CREATE TABLE top_reviews_for_year_with_words AS (
             LATERAL VIEW explode(split(text, ' ')) wordTable AS word
             WHERE length(word) > 3
         ) lower_words
-        GROUP BY productID, year(from_unixtime(time)), word
+        GROUP BY productID, year(from_unixtime(CAST(time AS int))), word
     ) words
     WHERE row_num <= 5
 );

@@ -21,6 +21,7 @@ input_path, output_path = args.input, args.output
 
 # Create the SparkSession
 spark = SparkSession.builder.getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 # Define the schema structure
 schema = StructType([
@@ -80,8 +81,7 @@ final_df = df_with_top.join(df_with_top_words, ["year", "productId"]).cache()
 
 end_time = time.time()
 
+# save the output
+final_df.write.csv(output_path, mode = "overwrite")
 # Print the time elapsed
 print("Time elapsed: ", end_time - start_time)
-
-# save the output
-final_df.write.csv(output_path)
