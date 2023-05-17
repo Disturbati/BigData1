@@ -10,11 +10,10 @@ CREATE TABLE IF NOT EXISTS reviews (
     summary string,
     text string
     ) 
-ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-tblproperties ("skip.header.line.count"="1");
-
-LOAD DATA LOCAL INPATH "/Users/davidemolitierno/Repositories/BigData1/dataset/${hiveconf:regexDB}.csv" OVERWRITE INTO TABLE reviews;
---LOAD DATA INPATH "/user/${hiveconf:username}/input/${hiveconf:regexDB}.csv" OVERWRITE INTO TABLE reviews;
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES('separatorChar'=',', 'quoteChar'='\"') 
+LOCATION '/user/${hiveconf:username}/input/${hiveconf:regexDB}'
+tblproperties('skip.header.line.count'='1');
 
 CREATE TABLE top_counted_reviews AS (
     SELECT cr.n_review, cr.reviews_year, cr.productId
