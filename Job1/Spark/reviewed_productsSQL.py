@@ -8,7 +8,7 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 import time
 from datetime import datetime
 from pyspark.sql.window import Window
-from pyspark.sql.functions import row_number, split, explode, count, from_unixtime, year, desc, length, lower, regexp_replace
+from pyspark.sql.functions import row_number, split, explode, count, from_unixtime, year, desc, length, lower, regexp_replace, col
 
 # Parse the arguments
 parser = argparse.ArgumentParser()
@@ -46,7 +46,8 @@ input_df = spark.read.option("quote", "\"") \
          .cache()
 
 # preprocessing, remove html tags and convert to lower case
-input_df = input_df.withColumn("text", lower(regexp_replace(input_df["text"], "<.*?>", ""))).cache()
+punctuation_pattern = "[!\"#$%&'()*+,-./:;<=>?@\\[\\\\\\]^_`{|}~<>]"
+input_df = input_df.withColumn("text", lower(regexp_replace(col("Text"), f"<.*?>|{punctuation_pattern}", ""))).cache()
 
 # convert unix_timestamp to year
 input_df = input_df.withColumn("time", input_df["time"].cast("timestamp"))
