@@ -34,18 +34,18 @@ def cleanText(text_review):
     text_review = " ".join(text_review.split())
     return text_review.lower()
 
-# =================TAKE YOUR TIME=================
+
 # TODO: prendi lo start time per calcolare quanto ci mette
 # TODO: aggiungere .cache() ove necessario
 
-def split(line):
+def preprocessing(line):
     # Replace commas inside quotes with semicolons
     line = re.sub(r',(?=[^"]*"[^"]*(?:"[^"]*"[^"]*)*$)', lambda m: m.group().replace(',', ';'), line)
     # Split the line using commas as a delimiter
     fields = line.split(',')
     # Replace semicolons back to commas
     fields = [field.replace(';', ',') for field in fields]
-    return fields
+    return ((datetime.fromtimestamp(int(fields[7])).year, fields[1]), cleanText(fields[9]))
 
 # reading input
 csv_rdd = sc.textFile(input_path)
@@ -55,9 +55,9 @@ csv_rdd = sc.textFile(input_path)
 #   2. skip dell'header del file csv
 #   3. splitting dei campi 
 #   4. return di un RDD cui record sono fatti dalla selezione del year (ottenuto convertendo lo unixtimestamp), productId e il testo della recensione pulito
-csv_rdd = csv_rdd.map(split)
 header = csv_rdd.first() # header del file usato per skipparlo nella fase di preparazione dei dati
-input_rdd = csv_rdd.filter(lambda x: x != header).map(lambda x: ((datetime.fromtimestamp(int(x[7])).year, x[1]), cleanText(x[9])))
+csv_rdd = csv_rdd.filter(lambda x: x != header)
+input_rdd = csv_rdd.map(preprocessing)
 
 # adesso abbiamo input_rdd:
 # (year, productId), recensione_txt
@@ -66,6 +66,7 @@ input_rdd = csv_rdd.filter(lambda x: x != header).map(lambda x: ((datetime.fromt
 counting_list = list(input_rdd.countByKey().items()) # [(year,productId), count]
 counting_rdd = sc.parallelize(counting_list) # necessario riportarlo in formato rdd
 
+# TODO: controllare se è necessario fare il join
 year_productId2count_txtRevs = input_rdd.join(counting_rdd) # (year,productId), (txt_rev, count)
 
 # ora gli elementi dell'rdd sono così strutturati
@@ -120,6 +121,6 @@ y_pId2wordcount = y_pId2wordcounted.map(lambda x: (x[0][0],(x[0][1],x[1])))
 # 2. per ogni valore associato, ogni elemento è (word, wordcounter)
 #   2.1. eseguo il sorted della lista, prendendo per ogni suo elemento il secondo campo (counter) 
 #   2.2. di questa lista ordianta prendo solo i primi 5
-final_out = y_pId2wordcount.groupByKey().mapValues(lambda x: sorted(x, key=lambda y: y[1], reverse=True)[:2])
+final_out = y_pId2wordcount.groupByKey().mapValues(lambda x: sorted(x, key=lambda y: y[1], reverse=True)[:5])
 
 final_out.saveAsTextFile(output_folder_path)
