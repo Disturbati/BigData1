@@ -20,7 +20,7 @@ for i in range(1, 10):
     df_copy['HelpfulnessDenominator'] = df_copy['HelpfulnessDenominator'].transform(lambda x : random.randint(0, 100))
     df_copy['HelpfulnessNumerator'] = [random.randint(0, row['HelpfulnessDenominator']) for index, row in df_copy.iterrows()]
     df_copy['Score'] = df_copy['Score'].transform(lambda x : random.randint(1, 5))
-    df_copy['Text'] = df_copy['Text'].transform(lambda x : x[:random.randint(0, len(x))])
+    df_copy['Text'] = df_copy['Text'].transform(lambda x : x[:random.randint(1, len(x))])
 
     df = pd.concat([df, df_copy], ignore_index=True)
 
