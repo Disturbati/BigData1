@@ -9,7 +9,12 @@ year2productIdStats = {}
 
 for line in sys.stdin:
     # year è la chiave, quindi ad ogni reducer arriveranno tutti i record relativi ad un anno
-    year, productId, num_review, text_review = line.strip().split("\t")
+    try:
+        year, productId, num_review, text_review = line.strip().split("\t")
+    except:
+        with open("./reducer.txt", "w") as f:
+            f.write(line.strip())
+        continue
 
     # inizializzo il dizionario se necessario
     if year not in year2productIdStats:
