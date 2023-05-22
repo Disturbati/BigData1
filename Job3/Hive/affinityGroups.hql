@@ -8,12 +8,14 @@ CREATE EXTERNAL TABLE reviews (
     helpfulnessNumerator int,
     helpfulnessDenominator int,
     score int,
-    time string,
+    timeunix string,
     summary string,
     text string
 ) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
     WITH SERDEPROPERTIES('separatorChar'=',', 'quoteChar'='\"') 
-    LOCATION '/user/${hiveconf:username}/input/${hiveconf:regexDB}'
+    -- LOCATION '/user/${hiveconf:username}/input/${hiveconf:regexDB}'
+    -- per S3 (bisogna creare una cartella cui nome è dbName, in cui dentro ho il dbName.csv)
+    LOCATION '/input/${hiveconf:dbName}'
     tblproperties('skip.header.line.count'='1');
 
 CREATE TABLE reviews_with_high_score AS (

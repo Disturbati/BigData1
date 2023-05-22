@@ -6,12 +6,12 @@ CREATE EXTERNAL TABLE reviews (
     helpfulnessNumerator int,
     helpfulnessDenominator int,
     score int,
-    time string,
+    timeunix string,
     summary string,
     text string
 ) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
     WITH SERDEPROPERTIES('separatorChar'=',', 'quoteChar'='\"') 
-    LOCATION '/user/${hiveconf:username}/input/${hiveconf:regexDB}'
+    -- LOCATION '/user/${hiveconf:username}/input/${hiveconf:regexDB}'
     tblproperties('skip.header.line.count'='1');
 
 -- SELECT helpfulnessNumerator, helpfulnessDenominator, helpfulnessNumerator/helpfulnessDenominator
@@ -19,7 +19,9 @@ CREATE EXTERNAL TABLE reviews (
 -- WHERE userId="A1TPW86OHXTXFC";
 
 -- LOAD DATA LOCAL INPATH "/Users/davidegattini/SourceTreeProj/BigData1/dataset/${hiveconf:regexDB}.csv" OVERWRITE INTO TABLE reviews;
--- LOAD DATA INPATH "hdfs:/user/${hiveconf:username}/input/${hiveconf:regexDB}.csv" OVERWRITE INTO TABLE reviews;
+
+-- per S3
+LOAD DATA INPATH "/input/${hiveconf:dbName}.csv" OVERWRITE INTO TABLE reviews;
 
 CREATE TABLE user_reviews_avarage_utility AS
     SELECT userId, avg(1.0*(helpfulnessNumerator/helpfulnessDenominator)) as avg_reviews_utility
