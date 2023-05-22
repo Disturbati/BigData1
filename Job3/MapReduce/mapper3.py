@@ -7,8 +7,6 @@ for line in sys.stdin:
 
     userIds, productIds = line.strip().split('\t')
 
-    userId1, userId2 = userIds.split(',')
-
     products = productIds.split(',')
 
     # map all the possible combinations of affinity groups of three elements
@@ -16,11 +14,22 @@ for line in sys.stdin:
 
     # use , to separate the elements of the combination
     # and use ; to separate the combinations
+    combinations_string = ""
+    first = True
     for combination in combinations:
+        firstElem = True
         for elem in combination:
-            combination_string = elem + ','
-        combinations_string = ';' + combination_string
+            if firstElem:
+                combination_string = elem
+                firstElem = False
+            else:
+                combination_string = combination_string + "," + elem
+            
+        if first:
+            combinations_string = combination_string
+            first = False
+        else:
+            combinations_string = combinations_string + ";" + combination_string
 
-    for combination in combinations:
-        print('{},{}\t{}'.format(userId1, userId2, combinations_string))
+    print('{}\t{}'.format(userIds, combinations_string))
 

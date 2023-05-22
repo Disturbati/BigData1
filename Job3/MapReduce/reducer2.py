@@ -8,18 +8,21 @@ for line in sys.stdin:
     line = line.strip()
     userIds, productId = line.split('\t')
 
-    userId1, userId2 = userIds.split(',')
-
-    if (userId1, userId2) not in coupleToAffinity:
-        coupleToAffinity[(userId1, userId2)] = set()
+    if userIds not in coupleToAffinity:
+        coupleToAffinity[userIds] = set()
     
-    coupleToAffinity[(userId1, userId2)].add(productId)
+    coupleToAffinity[userIds].add(productId)
 
 for couple in coupleToAffinity.keys():
     if len(coupleToAffinity[couple]) < 3:
         continue
+    affinity = ""
+    first = True
     for productId in coupleToAffinity[couple]:
-        affinity = "," + productId
+        if first:
+            affinity = productId
+            first = False
+        affinity = affinity + "," + productId
 
-    print('{},{}\t{}'.format(couple[0], couple[1], affinity))
+    print('{}\t{}'.format(couple, affinity))
 

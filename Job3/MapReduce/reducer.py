@@ -15,6 +15,7 @@ for line in sys.stdin:
 
 # generate all the couples of users that have affinity for the same product
 for productId in productToUser:
-    for i in range(len(productToUser[productId])):
-        for j in range(i+1, len(productToUser[productId])):
-            print('{},{}\t{}'.format(productToUser[productId][i], productToUser[productId][j], productId))
+    users_list = list(productToUser[productId])
+    for i in range(len(users_list)):
+        for j in range(i+1, len(users_list)):
+            print('{},{}\t{}'.format(users_list[i], users_list[j], productId))
