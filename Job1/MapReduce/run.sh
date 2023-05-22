@@ -15,15 +15,16 @@ else
     # a partial output altrimenti output diventa uguale a $4
     if [ $5 -eq 1 ]; then
         output=$4
-    fi
-    if [ $5 -eq 2 ]; then
+    else
+        if [ $5 -eq 2 ]; then
         output="partial_output"
         final_output=$4
         mapper2=$6
         reducer2=$7
-    else
-        echo "Errore: inserire al max 1 o 2 MapReduce"
-        exit 1
+        else
+            echo "Errore: inserire al max 1 o 2 MapReduce"
+            exit 1
+        fi
     fi
 fi
 

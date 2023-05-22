@@ -10,8 +10,9 @@ reader = csv.reader(sys.stdin, delimiter=",", quotechar="\"")
 next(reader) # skippa l'header
 
 for line in reader:
+
     # prendo l'anno
-    unix_timestamp = line[7]
+    unix_timestamp = line[7].strip()
     try:
         year = datetime.fromtimestamp(int(unix_timestamp)).year
     except:
@@ -20,10 +21,10 @@ for line in reader:
         continue
     
     # prendo il productId
-    productId = line[1]
+    productId = line[1].strip()
 
     # prendo il testo
-    text_review = line[9]
+    text_review = line[9].strip()
 
     # pre processing del testo, pulito da punteggiatura e tag html
     html_regex = re.compile(r"<.*?>") # regex per togliere tag html
@@ -35,4 +36,4 @@ for line in reader:
     # rimuovi tutti i caratteri di spaziatura
     text_review = " ".join(text_review.split())
 
-    print(year, productId, 1, text_review, sep="\t")
+    print("%s\t%s\t%i\t%s" % (year, productId, 1, text_review))

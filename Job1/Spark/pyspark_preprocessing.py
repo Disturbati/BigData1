@@ -8,14 +8,17 @@ import re
 # Parsing the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("--input", type=str)
+parser.add_argument("--output", type=str)
 args = parser.parse_args()
 input_path = args.input
+output_file_cleaned_path = args.output
 
 # Extracting the filename without extension
 input_filename = input_path.split("/")[-1].split(".")[0]
 
-# Output file path for cleaned dataset
-output_file_cleaned_path = "hdfs:///user/davidemolitierno/input/" + input_filename + '_job1_cleaned'
+# Output file path for cleaned dataset (default value se non è stato passato come parametro --output)
+if output_file_cleaned_path is None:
+    output_file_cleaned_path = "hdfs:///user/davidemolitierno/input/" + input_filename + '_job1_cleaned'
 
 # Create a Spark session
 spark = SparkSession.builder.getOrCreate()
