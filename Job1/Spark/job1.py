@@ -114,6 +114,8 @@ def top_reviewed_products_with_frequent_word_used(input_path, output_folder_path
         #   2.2. di questa lista ordianta prendo solo i primi 5
         final_out = y_pId2wordcount.groupByKey().mapValues(lambda x: sorted(x, key=lambda y: y[1], reverse=True)[:5])
 
+        print(final_out.take(10))
+
         final_out.saveAsTextFile(output_folder_path)
 
 if __name__ == "__main__":
